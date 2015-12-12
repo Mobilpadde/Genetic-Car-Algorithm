@@ -33,7 +33,6 @@ $(document).ready(function(){
                 if(cars[i].rounds > maxRounds) maxRounds = cars[i].rounds;
                 if(cars[i].traveled > maxTraveled) maxTraveled = cars[i].traveled;
             }
-            console.log(maxTraveled);
 
             for(var i in cars){
                 var fitnessNormal = map(cars[i].fitness(), 0, maxFit, 0, 1),
