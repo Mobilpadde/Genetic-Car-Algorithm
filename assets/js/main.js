@@ -35,8 +35,8 @@ $(document).ready(function(){
             }
 
             for(var i in cars){
-                var fitnessNormal = map(cars[i].fitness(), 0, maxFit, 0, 1),
-                    ageNormal = map(cars[i].currentGene, 0, maxAge, 0, 1),
+                var fitnessNormal = map(cars[i].fitness(), 0, maxFit || 1, 0, 1),
+                    ageNormal = map(cars[i].currentGene, 0, maxAge || 1, 0, 1),
                     traveledNormal = map(cars[i].rounds, 0, maxTraveled || 1, 0, 1),
                     roundsNormal = map(cars[i].rounds, 0, maxRounds || 1, 0, 1),
 
@@ -86,6 +86,7 @@ $(document).ready(function(){
                 age = 0;
 
             for(var i in cars){
+                if(cars[i].brainFart) cars[i].brainFart();
                 if(cars[i].onTrack()) cars[i].move();
                 else carsDead++;
                 cars[i].draw(ctx);
@@ -100,5 +101,5 @@ $(document).ready(function(){
         if(carsDead == cars.length) reproduce();
 
         $("#reproducing").text(reproducing);
-    }, 1000 / 600);
+    }, 1000 / (cars[0].brainFart ? 30 : 600)); // Chance to something like 600 if using Car.old.js
 });

@@ -8,15 +8,7 @@ Car = function(track){
         _acceleration = new Vector(),
 
         _genes = [],
-        _rounds = 0,
-
-        _brain = new Brain(track),
-        _brainCheck = new Date().getTime();
-
-    /*for(var i = 0; i < 150; i++){
-        var angle = Math.random() * Math.PI * 2;
-        _genes.push(new Vector(Math.sin(angle), Math.cos(angle)).multiply(Math.random() * _maxForce));
-    }*/
+        _rounds = 0;
 
     Object.defineProperties(this, {
         "track": {
@@ -85,24 +77,18 @@ Car = function(track){
         "radius": {
             value: 5,
             writable: false
-        },
-
-        "brain": {
-            value: _brain,
-            writable: true
-        },
-        "brainCheck": {
-            value: _brainCheck,
-            writable: true
-        },
-        "lastTraveled": {
-            value: -Infinity,
-            writable: true
         }
     });
 }
 
 Car.prototype = {
+    generateGeneAndApply: function(){
+        var angle = Math.random() * (Math.PI * 2),
+            gene = new Vector(Math.sin(angle), Math.cos(angle)).multiply(Math.random() * this.maxForce);
+        this.genes.push(gene);
+        this.applyForce(gene);
+        this.currentGene++;
+    },
     crossover: function(partner){
         var last, first, child, midpoint;
 
@@ -115,7 +101,6 @@ Car.prototype = {
         }
 
         child = new Car(this.track);
-        child.brain = Object.create(this.brain);
         midpoint = Math.random() * first.genes.length;
 
         for(var i in last.genes){
@@ -127,7 +112,10 @@ Car.prototype = {
     },
     mutate: function(rate){
         for(var i in this.genes){
-            if(Math.random() < rate) this.steer(i);
+            if(Math.random() < rate){
+                var angle = Math.random() * (Math.PI * 2);
+                this.genes[i] = new Vector(Math.sin(angle), Math.cos(angle)).multiply(Math.random() * this.maxForce);
+            }
         }
     },
     onTrack: function(){
@@ -152,7 +140,7 @@ Car.prototype = {
                 }
             }
 
-            var anyFalse = true; // Find a proper name
+            var anyFalse = true;
             for(var i in shouldStop){
                 if(!shouldStop[i]){
                     anyFalse = false;
@@ -168,19 +156,6 @@ Car.prototype = {
 
         return !this.stopped;
     },
-    brainFart: function(){
-        if(!this.stopped){
-            if(new Date().getTime() - this.brainCheck > 1000){
-                if(this.traveled - this.lastTraveled < 15){ // Arbitrary number
-                    this.mutate(0.15);
-                    this.stopped = true;
-                }
-
-                this.brainCheck = new Date().getTime();
-                this.lastTraveled = this.traveled;
-            }
-        }
-    },
     fitness: function(){ // Find abetter way to calculate fitness
         var dist = Vector.distance(this.location, this.track.finish) || Infinity,
             fitn = Math.pow(1 / dist, 2);
@@ -194,68 +169,17 @@ Car.prototype = {
     applyForce: function(force){
         this.acceleration.add(force); // Maybe some mass
     },
-    steer: function(i){
-        var forces = [],
-            output = new Vector(),
-            desired = new Vector(),
-            error = new Vector(),
-            points = JSON.parse(JSON.stringify(this.track.points));
-
-        points[Object.keys(points).length] = JSON.parse(JSON.stringify(this.track.finish));
-
-        for(var i in points){
-            forces[i] = this.seek(points[i]);
-        }
-
-        output = this.brain.process(forces);
-        this.applyForce(output);
-        while(i > this.genes.length) i--;
-        if(i > -1) this.genes[i] = output;
-        else this.genes.push(output);
-
-        desired = points[this.nextDesired()];
-        error = Vector.substract(desired, this.location);
-        this.brain.train(forces, error);
-    },
-    seek: function(target){
-        var desired = Vector.substract(target, this.location).normalize().multiply(this.maxSpeed).multiply(0.5),
-            steer = Vector.substract(desired, this.velocity);
-
-        return steer;
-    },
-    nextDesired: function(){
-        var points = JSON.parse(JSON.stringify(this.track.points)),
-            direction = new Vector();
-
-        points[Object.keys(points).length] = JSON.parse(JSON.stringify(this.track.finish));
-
-        for(var i = 1; i < Object.keys(points).length; i++){
-            var p0 = points[i - 1],
-                p1 = points[i];
-
-            if(
-                this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
-                this.location.x < p1.x + this.track.width / 2 - this.radius / 2 &&
-                this.location.y > p0.y - this.track.width / 2 + this.radius / 2 &&
-                this.location.y < p1.y + this.track.width / 2 - this.radius / 2
-            ){
-                return (i == Object.keys(points).length - 1 ? 0 : i + 1);
-            }
-        }
-    },
     move: function(){
         if(!this.stopped){
             if(this.genes[this.currentGene]){
-                //console.log("Genome");
                 this.applyForce(this.genes[this.currentGene++]);
             }else{
-                //console.log("Brain");
-                this.steer();
-                this.currentGene++;
+                this.generateGeneAndApply();
             }
             this.velocity.add(this.acceleration);
             this.velocity.limit(this.maxSpeed);
 
+            //this.traveled += Math.abs(this.velocity.x) + Math.abs(this.velocity.y);
             this.travel();
             this.location.add(this.velocity);
 
