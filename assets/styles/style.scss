@@ -1,0 +1,41 @@
+// pretty:false
+
+$bg: #b5dee1;
+$footer: #555953;
+
+*{ margin: 0; padding: 0; }
+body{
+    font: 12px/1.1 monospace, sans-serif;
+    background: $bg;
+    color: $footer;
+    margin: 15px;
+    text-align: center;
+
+    > *{
+        padding-bottom: 15px;
+    }
+
+    #generation, #aliveTime, #fitness, #reproducing{
+        font-style: normal;
+        text-align: center;
+        display: block;
+
+        &:before{
+            font-size: 0.8em;
+
+            content: "Generation: ";
+        }
+    }
+
+    #aliveTime:before{
+        content: "Max Age: ";
+    }
+
+    #fitness:before{
+        content: "Fitness: ";
+    }
+
+    #reproducing:before{
+        content: "Reproducing: ";
+    }
+}
