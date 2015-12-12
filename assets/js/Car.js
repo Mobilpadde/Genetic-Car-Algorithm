@@ -119,8 +119,8 @@ Car.prototype = {
         midpoint = Math.random() * first.genes.length;
 
         for(var i in last.genes){
-            if(i < midpoint) child.genes[i] = first.genes[i];
-            else child.genes[i] = last.genes[i];
+            if(i < midpoint) child.genes[i] = first.genes[i].copy();
+            else child.genes[i] = last.genes[i].copy();
         }
 
         return child;
@@ -170,7 +170,7 @@ Car.prototype = {
     },
     brainFart: function(){
         if(!this.stopped){
-            if(new Date().getTime() - this.brainCheck > 1000){
+            if(new Date().getTime() - this.brainCheck > 2500){
                 if(this.traveled - this.lastTraveled < 15){ // Arbitrary number
                     this.mutate(0.15);
                     this.stopped = true;
@@ -181,7 +181,7 @@ Car.prototype = {
             }
         }
     },
-    fitness: function(){ // Find abetter way to calculate fitness
+    fitness: function(){ // Find a better way to calculate fitness
         var dist = Vector.distance(this.location, this.track.finish) || Infinity,
             fitn = Math.pow(1 / dist, 2);
 
@@ -194,7 +194,7 @@ Car.prototype = {
     applyForce: function(force){
         this.acceleration.add(force); // Maybe some mass
     },
-    steer: function(i){
+    steer: function(index){
         var forces = [],
             output = new Vector(),
             desired = new Vector(),
@@ -209,16 +209,25 @@ Car.prototype = {
 
         output = this.brain.process(forces);
         this.applyForce(output);
-        while(i > this.genes.length) i--;
-        if(i > -1) this.genes[i] = output;
+        if(index){
+            while(index > this.genes.length) index--;
+        }
+        if(index && index > -1){
+            if(this.genes[index] == output){
+                var angle = Math.random() * Math.PI * 2;
+                this.genes[index] = new Vector(Math.sin(angle), Math.cos(angle)).multiply(this.maxSpeed);
+            }else this.genes[index] = output;
+        }
         else this.genes.push(output);
 
-        desired = points[this.nextDesired()];
+        var d = this.nextDesired();
+        desired = points[d];
+        //console.log(d);
         error = Vector.substract(desired, this.location);
         this.brain.train(forces, error);
     },
     seek: function(target){
-        var desired = Vector.substract(target, this.location).normalize().multiply(this.maxSpeed).multiply(0.5),
+        var desired = Vector.substract(target, this.location).normalize().multiply(this.maxSpeed),
             steer = Vector.substract(desired, this.velocity);
 
         return steer;
@@ -250,7 +259,7 @@ Car.prototype = {
                 this.applyForce(this.genes[this.currentGene++]);
             }else{
                 //console.log("Brain");
-                this.steer();
+                this.steer(-1);
                 this.currentGene++;
             }
             this.velocity.add(this.acceleration);
