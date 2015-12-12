@@ -24,19 +24,19 @@ $(document).ready(function(){
             var matingPool = [];
 
             var maxFit = 0,
-                maxAlive = 0,
+                maxAge = 0,
                 maxRounds = 0;
             for(var i in cars){
                 if(cars[i].fitness() > maxFit) maxFit = cars[i].fitness();
-                if(cars[i].deadTime > maxAlive) maxAlive = cars[i].deadTime;
+                if(cars[i].currentGene > maxAge) maxAge = cars[i].currentGene;
                 if(cars[i].rounds > maxRounds) maxRounds = cars[i].rounds;
             }
 
             for(var i in cars){
                 var fitnessNormal = map(cars[i].fitness(), 0, maxFit, 0, 1),
-                    timeNormal = map(cars[i].deadTime, 0, maxAlive, 0, 1),
+                    ageNormal = map(cars[i].currentGene, 0, maxAge, 0, 1),
                     roundsNormal = map(cars[i].rounds, 0, maxRounds || 1, 0, 1),
-                    n = fitnessNormal * 10 + timeNormal * 25 + roundsNormal * 50;
+                    n = fitnessNormal * 10 + ageNormal * 25 + roundsNormal * 50;
 
                 for(var j = 0; j < n; j++){
                     matingPool.push(Object.create(cars[i]));
@@ -79,18 +79,18 @@ $(document).ready(function(){
         if(!reproducing){
             var fitness = 0,
                 carsDead = 0,
-                deadTime = -Infinity;
+                age = 0;
 
             for(var i in cars){
                 if(cars[i].onTrack()) cars[i].move();
                 else carsDead++;
                 cars[i].draw(ctx);
                 fitness += cars[i].fitness();
-                if(cars[i].deadTime > deadTime) deadTime = cars[i].deadTime;
+                if(cars[i].currentGene > age) age = cars[i].currentGene;
             }
 
             $("#fitness").text((fitness / cars.length).toFixed(20));
-            $("#aliveTime").text(new Date().getTime() - deadTime);
+            $("#aliveTime").text(age);
         }
 
         if(carsDead == cars.length) reproduce();
