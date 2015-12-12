@@ -25,18 +25,23 @@ $(document).ready(function(){
 
             var maxFit = 0,
                 maxAge = 0,
-                maxRounds = 0;
+                maxRounds = 0,
+                maxTraveled = 0;
             for(var i in cars){
                 if(cars[i].fitness() > maxFit) maxFit = cars[i].fitness();
                 if(cars[i].currentGene > maxAge) maxAge = cars[i].currentGene;
                 if(cars[i].rounds > maxRounds) maxRounds = cars[i].rounds;
+                if(cars[i].traveled > maxTraveled) maxTraveled = cars[i].traveled;
             }
+            console.log(maxTraveled);
 
             for(var i in cars){
                 var fitnessNormal = map(cars[i].fitness(), 0, maxFit, 0, 1),
                     ageNormal = map(cars[i].currentGene, 0, maxAge, 0, 1),
+                    traveledNormal = map(cars[i].rounds, 0, maxTraveled || 1, 0, 1),
                     roundsNormal = map(cars[i].rounds, 0, maxRounds || 1, 0, 1),
-                    n = fitnessNormal * 10 + ageNormal * 25 + roundsNormal * 50;
+
+                    n = fitnessNormal * 15 + ageNormal * 25 + traveledNormal * 35 + roundsNormal * 45;
 
                 for(var j = 0; j < n; j++){
                     matingPool.push(Object.create(cars[i]));

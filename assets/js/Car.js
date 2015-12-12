@@ -16,6 +16,10 @@ Car = function(track){
             writable: false
         },
 
+        "traveled": {
+            value: 0,
+            writable: true
+        },
         "location": {
             value: track.finish.copy(),
             writable: false
@@ -161,7 +165,7 @@ Car.prototype = {
         this.acceleration.add(force); // Maybe some mass
     },
     move: function(){
-        if(!this.stopped && this.onTrack){
+        if(!this.stopped){
             if(this.genes[this.currentGene]){
                 this.applyForce(this.genes[this.currentGene++]);
             }else{
@@ -170,6 +174,7 @@ Car.prototype = {
             this.velocity.add(this.acceleration);
             this.velocity.limit(this.maxSpeed);
 
+            this.traveled += Math.abs(this.velocity.x);
             this.location.add(this.velocity);
 
             this.acceleration.multiply(0);
