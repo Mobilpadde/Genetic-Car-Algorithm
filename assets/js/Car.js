@@ -127,9 +127,9 @@ Car.prototype = {
                     p1 = points[i];
                 if(!(
                     this.location.x > p0.x - this.track.width / 2 + 2.5 &&
-                    this.location.x < p1.x + this.track.width / 2 + 2.5 &&
+                    this.location.x < p1.x + this.track.width / 2 - 2.5 &&
                     this.location.y > p0.y - this.track.width / 2 + 2.5 &&
-                    this.location.y < p1.y + this.track.width / 2 + 2.5
+                    this.location.y < p1.y + this.track.width / 2 - 2.5
                 )){
                     shouldStop[i] = true;
                 }
@@ -174,7 +174,7 @@ Car.prototype = {
             this.velocity.add(this.acceleration);
             this.velocity.limit(this.maxSpeed);
 
-            this.traveled += Math.abs(this.velocity.x);
+            this.traveled += Math.abs(this.velocity.x) + Math.abs(this.velocity.y);
             this.location.add(this.velocity);
 
             this.acceleration.multiply(0);
