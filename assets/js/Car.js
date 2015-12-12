@@ -72,6 +72,11 @@ Car = function(track){
             get: function(){ return _rounds; },
             set: function(){ _rounds++; },
             configurable: false
+        },
+
+        "radius": {
+            value: 5,
+            writable: false
         }
     });
 }
@@ -126,10 +131,10 @@ Car.prototype = {
                 var p0 = points[i - 1],
                     p1 = points[i];
                 if(!(
-                    this.location.x > p0.x - this.track.width / 2 + 2.5 &&
-                    this.location.x < p1.x + this.track.width / 2 - 2.5 &&
-                    this.location.y > p0.y - this.track.width / 2 + 2.5 &&
-                    this.location.y < p1.y + this.track.width / 2 - 2.5
+                    this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
+                    this.location.x < p1.x + this.track.width / 2 - this.radius / 2 &&
+                    this.location.y > p0.y - this.track.width / 2 + this.radius / 2 &&
+                    this.location.y < p1.y + this.track.width / 2 - this.radius / 2
                 )){
                     shouldStop[i] = true;
                 }
@@ -151,7 +156,7 @@ Car.prototype = {
 
         return !this.stopped;
     },
-    fitness: function(){
+    fitness: function(){ // Find abetter way to calculate fitness
         var dist = Vector.distance(this.location, this.track.finish) || Infinity,
             fitn = Math.pow(1 / dist, 2);
 
@@ -174,7 +179,8 @@ Car.prototype = {
             this.velocity.add(this.acceleration);
             this.velocity.limit(this.maxSpeed);
 
-            this.traveled += Math.abs(this.velocity.x) + Math.abs(this.velocity.y);
+            //this.traveled += Math.abs(this.velocity.x) + Math.abs(this.velocity.y);
+            this.travel();
             this.location.add(this.velocity);
 
             this.acceleration.multiply(0);
@@ -183,11 +189,35 @@ Car.prototype = {
             this.location.y = Math.min(260, Math.max(0, this.location.y));
         }
     },
+    travel: function(){
+        var points = JSON.parse(JSON.stringify(this.track.points)),
+            direction = new Vector();
+
+        points[Object.keys(points).length] = JSON.parse(JSON.stringify(this.track.finish));
+
+        for(var i = 1; i < Object.keys(points).length; i++){
+            var p0 = points[i - 1],
+                p1 = points[i];
+
+            if(
+                this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
+                this.location.x < p1.x + this.track.width / 2 - this.radius / 2 &&
+                this.location.y > p0.y - this.track.width / 2 + this.radius / 2 &&
+                this.location.y < p1.y + this.track.width / 2 - this.radius / 2
+            ){
+                if(p0.x - p1.x < 0) this.traveled += this.velocity.x;
+                else if(p0.x - p1.x > 0) this.traveled -= this.velocity.x;
+                else if(p0.y - p1.y < 0) this.traveled += this.velocity.y;
+                else if(p0.y - p1.y > 0) this.traveled -= this.velocity.y;
+                break;
+            }
+        }
+    },
     draw: function(ctx){
         ctx.save();
-        ctx.fillStyle = "hsla(" + (this.fitness() * 100) + ", 100%, 50%, 0.5)";
+        ctx.fillStyle = "hsla(" + (this.traveled % 360) + ", 100%, 50%, 0.5)";
         ctx.beginPath();
-        ctx.arc(this.location.x, this.location.y, 5, 0, Math.PI * 2);
+        ctx.arc(this.location.x, this.location.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.closePath();
         ctx.restore();
