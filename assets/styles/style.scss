@@ -15,7 +15,7 @@ body{
         padding-bottom: 15px;
     }
 
-    #generation, #aliveTime, #fitness, #reproducing{
+    #generation, #aliveTime, #traveled, #rounds, #fitness, #reproducing{
         font-style: normal;
         text-align: center;
         display: block;
@@ -29,6 +29,14 @@ body{
 
     #aliveTime:before{
         content: "Max Age: ";
+    }
+
+    #traveled:before{
+        content: "Max Traveled: ";
+    }
+
+    #rounds:before{
+        content: "Max Rounds: ";
     }
 
     #fitness:before{

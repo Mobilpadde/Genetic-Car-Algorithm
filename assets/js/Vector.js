@@ -84,3 +84,13 @@ Vector.add = function(a, b){
 Vector.substract = function(a, b){
     return new Vector(a.x - b.x, a.y - b.y);
 }
+
+Vector.max = function(a, b){
+    if(Math.max(a.magSq(), b.magSq()) == a.magSq()) return a;
+    else return b;
+}
+
+Vector.min = function(a, b){
+    if(Math.min(a.magSq(), b.magSq()) == a.magSq()) return a;
+    else return b;
+}

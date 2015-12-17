@@ -9,6 +9,7 @@ Car = function(track){
 
         _genes = [],
         _rounds = 0,
+        _lastDesired = null,
         _points = JSON.parse(JSON.stringify(track.points));
 
     _points[Object.keys(_points).length] = JSON.parse(JSON.stringify(track.finish));
@@ -80,8 +81,12 @@ Car = function(track){
             writable: true
         },
         "rounds": {
-            get: function(){ return _rounds; },
-            set: function(){ _rounds++; },
+            value: _rounds,
+            writable: true
+        },
+        "lastDesired": {
+            get: function(){ return _lastDesired; },
+            set: function(ld){ _lastDesired = ld; },
             configurable: false
         },
 
@@ -137,16 +142,14 @@ Car.prototype = {
     },
     onTrack: function(){
         if(!this.stopped){
-            var points = JSON.parse(JSON.stringify(this.track.points)),
-                shouldStop = [];
+            var shouldStop = [];
 
-            points[Object.keys(points).length] = JSON.parse(JSON.stringify(this.track.finish));
+            for(var i = 1; i < Object.keys(this.points).length; i++) shouldStop[i] = false;
 
-            for(var i = 1; i < Object.keys(points).length; i++) shouldStop[i] = false;
+            for(var i = 1; i < Object.keys(this.points).length; i++){
+                var p0 = Vector.min(this.points[i - 1], this.points[i]),
+                    p1 = Vector.max(this.points[i - 1], this.points[i]);
 
-            for(var i = 1; i < Object.keys(points).length; i++){
-                var p0 = points[i - 1],
-                    p1 = points[i];
                 if(!(
                     this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
                     this.location.x < p1.x + this.track.width / 2 - this.radius / 2 &&
@@ -157,15 +160,15 @@ Car.prototype = {
                 }
             }
 
-            var anyFalse = true;
+            var noneFalse = true;
             for(var i in shouldStop){
                 if(!shouldStop[i]){
-                    anyFalse = false;
+                    noneFalse = false;
                     break;
                 }
             }
 
-            if(anyFalse){
+            if(noneFalse){
                 this.stopped = true;
                 this.deadTime = new Date().getTime();
             }
@@ -175,7 +178,7 @@ Car.prototype = {
     },
     fitness: function(){ // Find abetter way to calculate fitness
         var dist = Vector.distance(this.location, this.nextDesired()) || Infinity,
-            fitn = Math.pow(1 / dist, 2);
+            fitn = Math.pow(1 / dist, 2); //  + this.traveled
 
         if(this.finishTime == Infinity) fitn *= 0.1;
         if(this.stopped && this.finishTime == Infinity) fitn *= 0.1;
@@ -214,8 +217,8 @@ Car.prototype = {
     },
     nextDesired: function(){
         for(var i = 1; i < Object.keys(this.points).length; i++){
-            var p0 = this.points[i - 1],
-                p1 = this.points[i];
+            var p0 = Vector.min(this.points[i - 1], this.points[i]),
+                p1 = Vector.max(this.points[i - 1], this.points[i]);
 
             if(
                 this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
@@ -223,7 +226,12 @@ Car.prototype = {
                 this.location.y > p0.y - this.track.width / 2 + this.radius / 2 &&
                 this.location.y < p1.y + this.track.width / 2 - this.radius / 2
             ){
-                return (i == Object.keys(this.points).length - 1 ? this.points[0] : this.points[i + 1]);
+                var index = (i == Object.keys(this.points).length - 1 ? 0 : i + 1)
+
+                if(this.lastDesired > index && index == 0) this.rounds++;
+                this.lastDesired = index;
+
+                return this.points[index];
             }
         }
 
@@ -233,8 +241,8 @@ Car.prototype = {
         var direction = new Vector();
 
         for(var i = 1; i < Object.keys(this.points).length; i++){
-            var p0 = this.points[i - 1],
-                p1 = this.points[i];
+            var p0 = Vector.min(this.points[i - 1], this.points[i]),
+                p1 = Vector.max(this.points[i - 1], this.points[i]);
 
             if(
                 this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&

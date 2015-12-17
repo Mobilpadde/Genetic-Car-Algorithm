@@ -14,7 +14,7 @@ $(document).ready(function(){
         ),
         cars = [],
         generation = 0,
-        mutationRate = 0.05,
+        mutationRate = 0.01,
         reproducing = false,
 
         map = function(n, start1, stop1, start2, stop2){
@@ -40,7 +40,7 @@ $(document).ready(function(){
                     traveledNormal = map(cars[i].rounds, 0, maxTraveled || 1, 0, 1),
                     roundsNormal = map(cars[i].rounds, 0, maxRounds || 1, 0, 1),
 
-                    n = fitnessNormal * 15 + ageNormal * 25 + traveledNormal * 35 + roundsNormal * 45;
+                    n = fitnessNormal * 25 + ageNormal * 50 + traveledNormal * 100 + roundsNormal * 200;
 
                 for(var j = 0; j < n; j++){
                     matingPool.push(Object.create(cars[i]));
@@ -69,11 +69,13 @@ $(document).ready(function(){
             reproducing = false;
         }
 
-    for(var i = 0; i < 15; i++){
+    for(var i = 0; i < 50; i++){
         cars.push(new Car(track));
     }
 
-    var maxAge = 0;
+    var maxAge = 0,
+        maxTraveled = 0,
+        maxRounds = 0;
     setInterval(function(){
         ctx.clearRect(0, 0, 500, 260);
         //ctx.fillStyle = "#000";
@@ -84,7 +86,9 @@ $(document).ready(function(){
         if(!reproducing){
             var fitness = 0,
                 carsDead = 0,
-                age = 0;
+                age = 0,
+                traveled = 0,
+                rounds = 0;
 
             for(var i in cars){
                 if(cars[i].brainFart) cars[i].brainFart();
@@ -93,11 +97,19 @@ $(document).ready(function(){
                 cars[i].draw(ctx);
                 fitness += cars[i].fitness();
                 if(cars[i].currentGene > age) age = cars[i].currentGene;
+                if(cars[i].traveled > traveled) traveled = cars[i].traveled;
             }
 
             $("#fitness").text((fitness / cars.length).toFixed(20));
+
             if(age > maxAge) maxAge = age;
             $("#aliveTime").text(age + " (" + maxAge + ")");
+
+            if(traveled > maxTraveled) maxTraveled = traveled;
+            $("#traveled").text(traveled.toFixed(1) + " (" + maxTraveled.toFixed(1) + ")");
+
+            if(rounds > maxRounds) maxRounds = rounds;
+            $("#rounds").text(rounds + " (" + maxRounds + ")");
         }
 
         if(carsDead == cars.length) reproduce();

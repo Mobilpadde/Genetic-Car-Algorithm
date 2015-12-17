@@ -152,8 +152,9 @@ Car.prototype = {
             for(var i = 1; i < Object.keys(this.points).length; i++) shouldStop[i] = false;
 
             for(var i = 1; i < Object.keys(this.points).length; i++){
-                var p0 = this.points[i - 1],
-                    p1 = this.points[i];
+                var p0 = Vector.min(this.points[i - 1], this.points[i]),
+                    p1 = Vector.max(this.points[i - 1], this.points[i]);
+
                 if(!(
                     this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
                     this.location.x < p1.x + this.track.width / 2 - this.radius / 2 &&
@@ -243,8 +244,8 @@ Car.prototype = {
     },
     nextDesired: function(){
         for(var i = 1; i < Object.keys(this.points).length; i++){
-            var p0 = this.points[i - 1],
-                p1 = this.points[i];
+            var p0 = Vector.min(this.points[i - 1], this.points[i]),
+                p1 = Vector.max(this.points[i - 1], this.points[i]);
 
             if(
                 this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
@@ -288,8 +289,8 @@ Car.prototype = {
     },
     travel: function(){
         for(var i = 1; i < Object.keys(this.points).length; i++){
-            var p0 = this.points[i - 1],
-                p1 = this.points[i];
+            var p0 = Vector.min(this.points[i - 1], this.points[i]),
+                p1 = Vector.max(this.points[i - 1], this.points[i]);
 
             if(
                 this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
