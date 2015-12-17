@@ -178,7 +178,7 @@ Car.prototype = {
     },
     fitness: function(){ // Find abetter way to calculate fitness
         var dist = Vector.distance(this.location, this.nextDesired()) || Infinity,
-            fitn = Math.pow(1 / dist, 2); //  + this.traveled
+            fitn = Math.pow(1 / dist, this.traveled); //  + this.traveled
 
         if(this.finishTime == Infinity) fitn *= 0.1;
         if(this.stopped && this.finishTime == Infinity) fitn *= 0.1;
@@ -241,8 +241,8 @@ Car.prototype = {
         var direction = new Vector();
 
         for(var i = 1; i < Object.keys(this.points).length; i++){
-            var p0 = Vector.min(this.points[i - 1], this.points[i]),
-                p1 = Vector.max(this.points[i - 1], this.points[i]);
+            var p0 = this.points[i - 1],
+                p1 = this.points[i];
 
             if(
                 this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
@@ -260,7 +260,7 @@ Car.prototype = {
     },
     draw: function(ctx){
         ctx.save();
-        ctx.fillStyle = "hsla(" + (this.traveled % 360) + ", 100%, 50%, 0.5)";
+        ctx.fillStyle = "hsla(" + (Vector.distance(this.location, this.nextDesired()) % 360) + ", 100%, 50%, 0.5)";
         ctx.beginPath();
         ctx.arc(this.location.x, this.location.y, this.radius, 0, Math.PI * 2);
         ctx.fill();

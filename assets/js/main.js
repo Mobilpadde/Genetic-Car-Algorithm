@@ -14,7 +14,7 @@ $(document).ready(function(){
         ),
         cars = [],
         generation = 0,
-        mutationRate = 0.01,
+        mutationRate = 0.001,
         reproducing = false,
 
         map = function(n, start1, stop1, start2, stop2){
@@ -40,7 +40,7 @@ $(document).ready(function(){
                     traveledNormal = map(cars[i].rounds, 0, maxTraveled || 1, 0, 1),
                     roundsNormal = map(cars[i].rounds, 0, maxRounds || 1, 0, 1),
 
-                    n = fitnessNormal * 25 + ageNormal * 50 + traveledNormal * 100 + roundsNormal * 200;
+                    n = fitnessNormal * 1 + ageNormal * 2 + traveledNormal * 4 + roundsNormal * 8;
 
                 for(var j = 0; j < n; j++){
                     matingPool.push(Object.create(cars[i]));
@@ -69,7 +69,7 @@ $(document).ready(function(){
             reproducing = false;
         }
 
-    for(var i = 0; i < 50; i++){
+    for(var i = 0; i < 100; i++){
         cars.push(new Car(track));
     }
 

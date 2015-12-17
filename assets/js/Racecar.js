@@ -285,7 +285,7 @@ Car.prototype = {
             if(!this.genes[this.currentGene]){
                 this.steer(-1);
                 this.currentGene++;
-            }else if(Math.random() >= 0.5) this.steer(this.currentGene); // Might as well mutate
+            }//else if(Math.random() >= 0.5) this.steer(this.currentGene); // Might as well mutate
             else this.applyForce(this.genes[this.currentGene++]);
 
             this.velocity.add(this.acceleration);
