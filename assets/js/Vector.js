@@ -30,6 +30,10 @@ Vector.prototype = {
         return this;
     },
 
+    negative: function(){
+        return this.multiply(-1);
+    },
+
     dot: function(v){
         return this.x * v.x + this.y * v.y;
     },

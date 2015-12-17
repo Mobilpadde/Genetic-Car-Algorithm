@@ -138,7 +138,11 @@ Car.prototype = {
     },
     mutate: function(rate){
         for(var i in this.genes){
-            if(Math.random() < rate) this.steer(i);
+            //if(Math.random() < rate) this.steer(i);
+            if(Math.random < rate){
+                var angle = Math.random() * Math.PI * 2;
+                this.genes[i] = new Vector(Math.sin(angle), Math.cos(angle)).multiply(this.maxSpeed);
+            }
         }
     },
     onTrack: function(){
@@ -229,9 +233,11 @@ Car.prototype = {
         }
         else this.genes.push(output);
 
-        if(next.x - this.location.x < 0 || next.y - this.location.y < 0) error = Vector.add(next, this.location).normalize();
-        else error = Vector.substract(next, this.location).normalize();
-        //console.log(error, output);
+        //if(next.x - this.location.x < 0 || next.y - this.location.y < 0) error = Vector.add(next, this.location).normalize();
+        //else error = Vector.substract(next, this.location).normalize();
+        //error = Vector.distance(next, this.location);
+        error = Vector.substract(next, this.location).normalize();
+        //console.log(error, output, next);
         //console.log(next);
         this.brain.train(output, error);
     },
@@ -265,7 +271,7 @@ Car.prototype = {
             if(!this.genes[this.currentGene]){
                 this.steer(-1);
                 this.currentGene++;
-            }else if(Math.random() >= 0.5) this.steer(this.currentGene - 1); // Might as well mutate
+            }else if(Math.random() >= 0.5) this.steer(this.currentGene); // Might as well mutate
             else this.applyForce(this.genes[this.currentGene++]);
 
             this.velocity.add(this.acceleration);

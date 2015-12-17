@@ -8,11 +8,22 @@ Car = function(track){
         _acceleration = new Vector(),
 
         _genes = [],
-        _rounds = 0;
+        _rounds = 0,
+        _points = JSON.parse(JSON.stringify(track.points));
+
+    _points[Object.keys(_points).length] = JSON.parse(JSON.stringify(track.finish));
+
+    for(var i in _points){
+        _points[i] = new Vector(_points[i].x, _points[i].y);
+    }
 
     Object.defineProperties(this, {
         "track": {
             value: track,
+            writable: false
+        },
+        "points": {
+            value: _points,
             writable: false
         },
 
@@ -89,6 +100,12 @@ Car.prototype = {
         this.applyForce(gene);
         this.currentGene++;
     },
+    badGene: function(){
+        //console.log("Bad gene...");
+        this.currentGene--;
+        //this.generateGeneAndApply();
+        this.genes[this.currentGene].negative();
+    },
     crossover: function(partner){
         var last, first, child, midpoint;
 
@@ -157,7 +174,7 @@ Car.prototype = {
         return !this.stopped;
     },
     fitness: function(){ // Find abetter way to calculate fitness
-        var dist = Vector.distance(this.location, this.track.finish) || Infinity,
+        var dist = Vector.distance(this.location, this.nextDesired()) || Infinity,
             fitn = Math.pow(1 / dist, 2);
 
         if(this.finishTime == Infinity) fitn *= 0.1;
@@ -179,15 +196,38 @@ Car.prototype = {
             this.velocity.add(this.acceleration);
             this.velocity.limit(this.maxSpeed);
 
-            //this.traveled += Math.abs(this.velocity.x) + Math.abs(this.velocity.y);
             this.travel();
+
+            var next = this.nextDesired(),
+                lastDistance = Vector.distance(next, this.location);
+
             this.location.add(this.velocity);
+
+            if(Vector.distance(next, this.location) > lastDistance) this.badGene();
+            //else console.log("Great gene, yay.");
 
             this.acceleration.multiply(0);
 
             this.location.x = Math.min(500, Math.max(0, this.location.x));
             this.location.y = Math.min(260, Math.max(0, this.location.y));
         }
+    },
+    nextDesired: function(){
+        for(var i = 1; i < Object.keys(this.points).length; i++){
+            var p0 = this.points[i - 1],
+                p1 = this.points[i];
+
+            if(
+                this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&
+                this.location.x < p1.x + this.track.width / 2 - this.radius / 2 &&
+                this.location.y > p0.y - this.track.width / 2 + this.radius / 2 &&
+                this.location.y < p1.y + this.track.width / 2 - this.radius / 2
+            ){
+                return (i == Object.keys(this.points).length - 1 ? this.points[0] : this.points[i + 1]);
+            }
+        }
+
+        return this.track.finish;
     },
     travel: function(){
         var points = JSON.parse(JSON.stringify(this.track.points)),
