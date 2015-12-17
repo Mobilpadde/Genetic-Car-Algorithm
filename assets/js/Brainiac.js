@@ -50,8 +50,8 @@ Brain.prototype = {
             var thoughtFromLeftA = this.connections.left[i].feedforward().a(force.x),
                 thoughtFromRightA = this.connections.right[i].feedforward().a(force.y),
 
-                thoughtFromLeftB = this.connections.left[i].feedforward().a(thoughtFromLeftA),
-                thoughtFromRightB = this.connections.right[i].feedforward().a(thoughtFromRightA)
+                thoughtFromLeftB = this.connections.left[i].feedforward().b(thoughtFromLeftA),
+                thoughtFromRightB = this.connections.right[i].feedforward().b(thoughtFromRightA)
 
                 //console.log(thoughtFromLeftA, thoughtFromRightA, thoughtFromLeftB, thoughtFromRightB);
 
@@ -59,7 +59,7 @@ Brain.prototype = {
             //thoughtFromA = this.connections[i].feedforward().a(force);
             //sum.add(this.connections[i].feedforward().b(thoughtFromA));
         }
-        console.log(sum);
+        //console.log(sum);
         return sum;
     },
     train: function(force, error){
