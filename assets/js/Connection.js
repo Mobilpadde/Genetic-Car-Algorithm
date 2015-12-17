@@ -28,10 +28,10 @@ Connection.prototype = {
         var _this = this;
         return {
             a: function(force){
-                return _this.a.feedforward(_this.bias.bias + _this.bias.weight + force * _this.weight);
+                return _this.a.feedforward(_this.bias.bias * _this.bias.weight + force * _this.weight);
             },
             b: function(force){
-                return _this.b.feedforward(_this.bias.bias + _this.bias.weight + force * _this.weight);
+                return _this.b.feedforward(_this.bias.bias * _this.bias.weight + force * _this.weight);
             }
         }
     },
