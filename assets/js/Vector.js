@@ -61,6 +61,10 @@ Vector.prototype = {
     }
 }
 
+Vector.multiply = function(a, b){
+    return a.copy().multiply(b);
+}
+
 Vector.random = function(){
     return new Vector(Math.random() * (2 - -2) + -2, Math.random() * (2 - -2) + -2);
 }

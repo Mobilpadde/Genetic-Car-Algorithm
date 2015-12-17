@@ -69,7 +69,7 @@ $(document).ready(function(){
             reproducing = false;
         }
 
-    for(var i = 0; i < 10; i++){
+    for(var i = 0; i < 1; i++){
         cars.push(new Car(track));
     }
 
@@ -101,5 +101,5 @@ $(document).ready(function(){
         if(carsDead == cars.length) reproduce();
 
         $("#reproducing").text(reproducing);
-    }, 1000 / (cars[0].brainFart ? 30 : 600)); // Chance to something like 600 if using Car.old.js
+    }, 1000 / (cars[0].brainFart ? 30 : 600)); // Chance to something like 600 if using Car.old.js // / (cars[0].brainFart ? 30 : 600)
 });
