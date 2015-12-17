@@ -101,15 +101,16 @@ Car.prototype = {
     generateGeneAndApply: function(){
         var angle = Math.random() * (Math.PI * 2),
             gene = new Vector(Math.sin(angle), Math.cos(angle)).multiply(Math.random() * this.maxSpeed);
-        this.genes.push(gene);
+        //this.genes.push(gene);
+        this.genes[this.currentGene++] = gene;
         this.applyForce(gene);
-        this.currentGene++;
+        //this.currentGene++;
     },
     badGene: function(){
         //console.log("Bad gene...");
         this.currentGene--;
-        //this.generateGeneAndApply();
-        this.genes[this.currentGene].negative();
+        this.generateGeneAndApply();
+        //this.genes[this.currentGene].negative().multiply(0.5);
     },
     crossover: function(partner){
         var last, first, child, midpoint;
@@ -178,7 +179,7 @@ Car.prototype = {
     },
     fitness: function(){ // Find abetter way to calculate fitness
         var dist = Vector.distance(this.location, this.nextDesired()) || Infinity,
-            fitn = Math.pow(1 / dist, this.traveled); //  + this.traveled
+            fitn = Math.pow(1 / dist, 2); //  + this.traveled
 
         if(this.finishTime == Infinity) fitn *= 0.1;
         if(this.stopped && this.finishTime == Infinity) fitn *= 0.1;

@@ -56,7 +56,7 @@ $(document).ready(function(){
 
             for(var i in cars){
                 var mom = parents[~~(Math.random() * parents.length)],
-                    dad = parents[~~(Math.random() * parents.length)],
+                    dad = mom,//parents[~~(Math.random() * parents.length)],
                     child = mom.crossover(dad);
 
                 child.mutate(mutationRate);
@@ -69,7 +69,7 @@ $(document).ready(function(){
             reproducing = false;
         }
 
-    for(var i = 0; i < 100; i++){
+    for(var i = 0; i < 1000; i++){
         cars.push(new Car(track));
     }
 
