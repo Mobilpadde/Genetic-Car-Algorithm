@@ -11,16 +11,15 @@ Brain = function(track){
     _neurons.push(_inputRight);
 
     //_points[Object.keys(_points).length] = JSON.parse(JSON.stringify(track.finish));
-
-    for(var i in _points){
+    for(var i = 0; i < Object.keys(_points).length; i++){
         var n = new Neuron();
         _connectionsLeft[i] = new Connection(_inputLeft, n);
         _connectionsRight[i] = new Connection(_inputRight, n);
-        _neurons[i + 1] = n;
+        _neurons[i + 2] = n;
     }
 
     for(var i in _neurons){
-        if(i > 0){
+        if(i > 1){
             _connectionsLeft[i] = new Connection(_neurons[i], _output);
             _connectionsRight[i] = new Connection(_neurons[i], _output);
         }

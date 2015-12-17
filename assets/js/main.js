@@ -69,7 +69,7 @@ $(document).ready(function(){
             reproducing = false;
         }
 
-    for(var i = 0; i < 1; i++){
+    for(var i = 0; i < 5; i++){
         cars.push(new Car(track));
     }
 

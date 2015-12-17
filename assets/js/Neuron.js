@@ -24,6 +24,6 @@ Neuron.prototype = {
         this.weight += this.rate * error.y * force.y;
         this.weight = Math.min(Math.max(this.weight, 0), 1);
 
-        this.bias.train(force, error);
+        //this.bias.train(force, error);
     }
 }
