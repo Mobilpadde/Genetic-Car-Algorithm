@@ -160,16 +160,17 @@ Car.prototype = {
                 }
             }
 
-            var anyFalse = true; // Find a proper name
+            var noneFalse = true; // Find a proper name
             for(var i in shouldStop){
                 if(!shouldStop[i]){
-                    anyFalse = false;
+                    noneFalse = false;
                     break;
                 }
             }
 
-            if(anyFalse){
+            if(noneFalse){
                 this.stopped = true;
+                //this.brain.train(this.location, this.location.multiply(-1));
                 this.deadTime = new Date().getTime();
             }
         }
@@ -178,8 +179,9 @@ Car.prototype = {
     },
     brainFart: function(){
         if(!this.stopped){
-            if(new Date().getTime() - this.brainCheck > 2500){
+            if(new Date().getTime() - this.brainCheck > 2000){
                 if(this.traveled - this.lastTraveled < 15){ // Arbitrary number
+                    // Figure a way to punish the brain...this.brain.train(you're stupid!); // Baaaad brain
                     this.mutate(0.15);
                     this.stopped = true;
                 }
@@ -223,7 +225,8 @@ Car.prototype = {
         }
         else this.genes.push(output);
 
-        error = Vector.substract(this.location, next);
+        error = Vector.substract(next, this.location);
+        //console.log(error, Vector.substract(this.location, error), output);
         this.brain.train(output, error);
     },
     nextDesired: function(){
@@ -245,14 +248,20 @@ Car.prototype = {
     },
     move: function(){
         if(!this.stopped){
-            if(this.genes[this.currentGene]){
+            /*if(this.genes[this.currentGene]){
                 //console.log("Genome");
                 this.applyForce(this.genes[this.currentGene++]);
             }else{
                 //console.log("Brain");
                 this.steer(-1);
                 this.currentGene++;
-            }
+            }*/
+            if(!this.genes[this.currentGene]){
+                this.steer(-1);
+                this.currentGene++;
+            }else if(Math.random() >= 0.5) this.steer(this.currentGene); // Might as well mutate
+            else this.applyForce(this.genes[this.currentGene++]);
+
             this.velocity.add(this.acceleration);
             this.velocity.limit(this.maxSpeed);
 
@@ -285,12 +294,10 @@ Car.prototype = {
         }
     },
     draw: function(ctx){
-        ctx.save();
         ctx.fillStyle = "hsla(" + (this.traveled % 360) + ", 100%, 50%, 0.5)";
         ctx.beginPath();
         ctx.arc(this.location.x, this.location.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.closePath();
-        ctx.restore();
     }
 }
