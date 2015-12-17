@@ -226,7 +226,7 @@ Car.prototype = {
         else this.genes.push(output);
 
         error = Vector.substract(next, this.location);
-        //console.log(error, Vector.substract(this.location, error), output);
+        //console.log(error, Vector.substract(this.location, output), output);
         this.brain.train(output, error);
     },
     nextDesired: function(){
