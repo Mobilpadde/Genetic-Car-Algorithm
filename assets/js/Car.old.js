@@ -95,7 +95,7 @@ Car = function(track){
 Car.prototype = {
     generateGeneAndApply: function(){
         var angle = Math.random() * (Math.PI * 2),
-            gene = new Vector(Math.sin(angle), Math.cos(angle)).multiply(Math.random() * this.maxForce);
+            gene = new Vector(Math.sin(angle), Math.cos(angle)).multiply(Math.random() * this.maxSpeed);
         this.genes.push(gene);
         this.applyForce(gene);
         this.currentGene++;
@@ -131,7 +131,7 @@ Car.prototype = {
         for(var i in this.genes){
             if(Math.random() < rate){
                 var angle = Math.random() * (Math.PI * 2);
-                this.genes[i] = new Vector(Math.sin(angle), Math.cos(angle)).multiply(Math.random() * this.maxForce);
+                this.genes[i] = new Vector(Math.sin(angle), Math.cos(angle)).multiply(Math.random() * this.maxSpeed);
             }
         }
     },
@@ -230,14 +230,11 @@ Car.prototype = {
         return this.track.finish;
     },
     travel: function(){
-        var points = JSON.parse(JSON.stringify(this.track.points)),
-            direction = new Vector();
+        var direction = new Vector();
 
-        points[Object.keys(points).length] = JSON.parse(JSON.stringify(this.track.finish));
-
-        for(var i = 1; i < Object.keys(points).length; i++){
-            var p0 = points[i - 1],
-                p1 = points[i];
+        for(var i = 1; i < Object.keys(this.points).length; i++){
+            var p0 = this.points[i - 1],
+                p1 = this.points[i];
 
             if(
                 this.location.x > p0.x - this.track.width / 2 + this.radius / 2 &&

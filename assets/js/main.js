@@ -103,5 +103,5 @@ $(document).ready(function(){
         if(carsDead == cars.length) reproduce();
 
         $("#reproducing").text(reproducing);
-    }, 1000 / (cars[0].brainFart ? 30 : 600)); // Chance to something like 600 if using Car.old.js // / (cars[0].brainFart ? 30 : 600)
+    }, 1000 / (cars[0].brainFart ? 30 : 60)); // Chance to something like 600 if using Car.old.js // / (cars[0].brainFart ? 30 : 600)
 });
