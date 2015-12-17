@@ -170,6 +170,8 @@ Car.prototype = {
 
             if(noneFalse){
                 this.stopped = true;
+                //for(var i = this.currentGene; i > this.currentGene - 5; i--) this.steer(i);
+                this.mutate(0.15);
                 //this.brain.train(this.location, this.location.multiply(-1));
                 this.deadTime = new Date().getTime();
             }
@@ -211,7 +213,9 @@ Car.prototype = {
             error = new Vector(),
             next = this.nextDesired();
 
-        output = this.brain.feedforward(next);
+        //console.log(next);
+
+        output = this.brain.feedforward(next).normalize();
         this.applyForce(output);
 
         if(index){
@@ -225,8 +229,10 @@ Car.prototype = {
         }
         else this.genes.push(output);
 
-        error = Vector.substract(next, this.location);
-        //console.log(error, Vector.substract(this.location, output), output);
+        if(next.x - this.location.x < 0 || next.y - this.location.y < 0) error = Vector.add(next, this.location).normalize();
+        else error = Vector.substract(next, this.location).normalize();
+        //console.log(error, output);
+        //console.log(next);
         this.brain.train(output, error);
     },
     nextDesired: function(){
@@ -259,7 +265,7 @@ Car.prototype = {
             if(!this.genes[this.currentGene]){
                 this.steer(-1);
                 this.currentGene++;
-            }else if(Math.random() >= 0.5) this.steer(this.currentGene); // Might as well mutate
+            }else if(Math.random() >= 0.5) this.steer(this.currentGene - 1); // Might as well mutate
             else this.applyForce(this.genes[this.currentGene++]);
 
             this.velocity.add(this.acceleration);

@@ -1,7 +1,7 @@
 Connection = function(a, b){
     Object.defineProperties(this, {
         "rate": {
-            value: 0.01,
+            value: 0.001,
             writable: false
         },
         "bias": {

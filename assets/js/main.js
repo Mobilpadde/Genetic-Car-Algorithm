@@ -69,10 +69,11 @@ $(document).ready(function(){
             reproducing = false;
         }
 
-    for(var i = 0; i < 15; i++){
+    for(var i = 0; i < 2; i++){
         cars.push(new Car(track));
     }
 
+    var maxAge = 0;
     setInterval(function(){
         ctx.clearRect(0, 0, 500, 260);
         //ctx.fillStyle = "#000";
@@ -95,7 +96,8 @@ $(document).ready(function(){
             }
 
             $("#fitness").text((fitness / cars.length).toFixed(20));
-            $("#aliveTime").text(age);
+            if(age > maxAge) maxAge = age;
+            $("#aliveTime").text(age + " (" + maxAge + ")");
         }
 
         if(carsDead == cars.length) reproduce();

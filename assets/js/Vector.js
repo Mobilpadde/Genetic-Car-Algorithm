@@ -73,6 +73,10 @@ Vector.distance = function(a, b){
     return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
 }
 
+Vector.add = function(a, b){
+    return a.copy().add(b);
+}
+
 Vector.substract = function(a, b){
     return new Vector(a.x - b.x, a.y - b.y);
 }

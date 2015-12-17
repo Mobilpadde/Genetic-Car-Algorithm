@@ -59,8 +59,8 @@ Brain.prototype = {
             //thoughtFromA = this.connections[i].feedforward().a(force);
             //sum.add(this.connections[i].feedforward().b(thoughtFromA));
         }
-        //console.log(sum);
-        return sum;
+        //console.log(sum.normalize());
+        return sum.normalize();
     },
     train: function(force, error){
         for(var i in this.connections.left){
