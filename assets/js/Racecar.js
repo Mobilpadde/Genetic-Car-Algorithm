@@ -12,6 +12,8 @@ Car = function(track){
 
         _brain = new Brain(track),
         _brainCheck = new Date().getTime(),
+
+        _lastDesired = null,
         _points = JSON.parse(JSON.stringify(track.points));
 
     _points[Object.keys(_points).length] = JSON.parse(JSON.stringify(track.finish));
@@ -105,6 +107,12 @@ Car = function(track){
         "brainCheck": {
             value: _brainCheck,
             writable: true
+        },
+
+        "lastDesired": {
+            get: function(){ return _lastDesired; },
+            set: function(ld){ _lastDesired = ld; },
+            configurable: false
         },
         "lastTraveled": {
             value: -Infinity,
@@ -253,7 +261,12 @@ Car.prototype = {
                 this.location.y > p0.y - this.track.width / 2 + this.radius / 2 &&
                 this.location.y < p1.y + this.track.width / 2 - this.radius / 2
             ){
-                return (i == Object.keys(this.points).length - 1 ? this.points[0] : this.points[i + 1]);
+                var index = (i == Object.keys(this.points).length - 1 ? 0 : i + 1)
+
+                if(this.lastDesired > index && index == 0) this.rounds++;
+                this.lastDesired = index;
+
+                return this.points[index];
             }
         }
 
