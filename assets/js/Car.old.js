@@ -10,6 +10,7 @@ Car = function(track){
         _genes = [],
         _rounds = 0,
         _lastDesired = null,
+        _lastUpdateRounds = null,
         _points = JSON.parse(JSON.stringify(track.points));
 
     _points[Object.keys(_points).length] = JSON.parse(JSON.stringify(track.finish));
@@ -85,9 +86,12 @@ Car = function(track){
             writable: true
         },
         "lastDesired": {
-            get: function(){ return _lastDesired; },
-            set: function(ld){ _lastDesired = ld; },
-            configurable: false
+            value: _lastDesired,
+            writable: true
+        },
+        "lastUpdateRounds": {
+            value: _lastUpdateRounds,
+            writable: true
         },
 
         "radius": {
@@ -108,9 +112,9 @@ Car.prototype = {
     },
     badGene: function(){
         //console.log("Bad gene...");
-        this.currentGene--;
-        this.generateGeneAndApply();
-        //this.genes[this.currentGene].negative().multiply(0.5);
+        //this.currentGene--;
+        //this.generateGeneAndApply();
+        this.genes[this.currentGene - 1].negative().multiply(0.1);
     },
     crossover: function(partner){
         var last, first, child, midpoint;
@@ -229,7 +233,23 @@ Car.prototype = {
             ){
                 var index = (i == Object.keys(this.points).length - 1 ? 0 : i + 1)
 
-                if(this.lastDesired > index && index == 0) this.rounds++;
+                //if(this.lastDesired > index && index == 0) this.rounds++;
+                if(
+                    this.lastDesired != null && (
+                    (
+                        this.lastDesired < index &&
+                        this.lastUpdateRounds != index &&
+                        this.lastUpdateRounds != this.lastDesired
+                    ) || (
+                        this.lastDesired != null &&
+                        this.lastDesired > index &&
+                        index == 0
+                    ))
+                ){
+                    this.rounds += 1 / Object.keys(this.points).length;
+                    this.lastUpdateRounds = index;
+                }
+
                 this.lastDesired = index;
 
                 return this.points[index];

@@ -9,7 +9,7 @@ Track = function(){
             writable: false // Should maybe be morphable
         },
         "width": {
-            value: 45,
+            value: 40,
             writable: false
         }
     });

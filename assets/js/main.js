@@ -14,7 +14,7 @@ $(document).ready(function(){
         ),
         cars = [],
         generation = 0,
-        mutationRate = 0.001,
+        mutationRate = 0.1,
         reproducing = false,
 
         map = function(n, start1, stop1, start2, stop2){
@@ -69,7 +69,7 @@ $(document).ready(function(){
             reproducing = false;
         }
 
-    for(var i = 0; i < 1000; i++){
+    for(var i = 0; i < 50; i++){
         cars.push(new Car(track));
     }
 
@@ -98,6 +98,7 @@ $(document).ready(function(){
                 fitness += cars[i].fitness();
                 if(cars[i].currentGene > age) age = cars[i].currentGene;
                 if(cars[i].traveled > traveled) traveled = cars[i].traveled;
+                if(cars[i].rounds > rounds) rounds = cars[i].rounds;
             }
 
             $("#fitness").text((fitness / cars.length).toFixed(20));
@@ -109,7 +110,7 @@ $(document).ready(function(){
             $("#traveled").text(traveled.toFixed(1) + " (" + maxTraveled.toFixed(1) + ")");
 
             if(rounds > maxRounds) maxRounds = rounds;
-            $("#rounds").text(rounds + " (" + maxRounds + ")");
+            $("#rounds").text((rounds * 100) + "% (" + (maxRounds * 100) + "%)");
         }
 
         if(carsDead == cars.length) reproduce();

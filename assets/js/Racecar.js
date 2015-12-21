@@ -263,7 +263,10 @@ Car.prototype = {
             ){
                 var index = (i == Object.keys(this.points).length - 1 ? 0 : i + 1)
 
-                if(this.lastDesired > index && index == 0) this.rounds++;
+                if(this.lastDesired == null) ;
+                else if(this.lastDesired > index && index == 0) this.rounds += 1 / this.points.length; //this.rounds++;
+                else if(this.lastDesired < index && index != 0) this.rounds += 1 / this.points.length;
+
                 this.lastDesired = index;
 
                 return this.points[index];
